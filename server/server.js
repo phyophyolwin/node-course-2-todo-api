@@ -21,6 +21,17 @@ app.post('/todos', (req, res) =>{// for resource creation
     });
 });
 
+app.get('/todos', (req, res)=>{
+    Todo.find().then((todos)=>{
+        res.send({
+            todos
+
+        });
+    },(err)=>{
+        res.status(400).send(e);
+    });
+});
+
 //GETY /todos/122000 
 
 app.listen(3000, () =>{
