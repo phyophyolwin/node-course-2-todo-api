@@ -41,9 +41,11 @@ UserSchema.methods.toJSON = function(){
     return _.pick(userObject, ['_id','email']);
 };
 
+//methods object is for instance method
 // arrow function do not bind "this" keyword, we need to bind the "this" keyword to store the individual document
 //so here we are using the normal function.
 UserSchema.methods.generateAuthToken = function (){//This instance method do have access to each doc, we need this to generate the JSON token
+    //Instance method, so cerating variable for instance => user
     let user = this;
     let access = 'auth';
     let token = jwt.sign({_id:user._id.toHexString(), access}, 'abc123').toString();//object and secret value
@@ -58,6 +60,31 @@ UserSchema.methods.generateAuthToken = function (){//This instance method do hav
         return token;
     });
 
+};
+
+//statics is for creating static method/ model method
+UserSchema.statics.findByToken = function(token){
+    //Model method, so creating variable with Model name => User
+    let User = this;
+    let decoded;//this is undefined.
+
+    try {
+        decoded = jwt.verify(token, 'abc123');
+    } catch (e) {
+        // return new Promise((resolve, reject)=>{
+        //     reject();
+        // });
+        //the above is same as below
+        return Promise.reject();
+    }
+
+    //this will return promise
+    return User.findOne({
+        '_id': decoded._id,
+        //to query the nested document
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    });
 };
 
 let User = mongoose.model('User',UserSchema);
