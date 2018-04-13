@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 let UserSchema = new mongoose.Schema(
     {
@@ -86,6 +87,25 @@ UserSchema.statics.findByToken = function(token){
         'tokens.access': 'auth'
     });
 };
+
+//To add the mongoose middleware to the model before the save event
+//next must be called and implemented, if not, the middleware is never complete and it will crash
+UserSchema.pre('save', function (next) {
+    let user = this;
+    //To check the hashed password not to be hashed again when it's not changed.
+    if(user.isModified('password')){
+        //hash the pw        
+        bcrypt.genSalt(10, (err, salt) =>{
+            bcrypt.hash(user.password, salt, (err, hash) =>{
+                user.password = hash;
+                next();
+            });
+        });
+    }
+    else{
+        next();
+    }
+});
 
 let User = mongoose.model('User',UserSchema);
 
