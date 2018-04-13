@@ -1,3 +1,5 @@
+require('./config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');//take JSON and convert it into object
@@ -90,6 +92,22 @@ app.patch('/todos/:id', (req,res)=>{
         res.send({todo});
     }).catch((e)=>{
         res.status(400).send();
+    });
+});
+
+app.post('/users', (req, res) =>{// for resource creation
+    let body = _.pick(req.body, ['email', 'password']);
+    let user = new User(body);    
+
+    user.save().then(()=>{
+        return user.generateAuthToken();
+        // res.send(user);
+    }).then((token) =>{
+        //To send the token in the header
+        //x- in the header shows the custom header
+        res.header('x-auth', token).send(user);
+    }).catch((error)=>{
+        res.status(400).send(error);
     });
 });
 
