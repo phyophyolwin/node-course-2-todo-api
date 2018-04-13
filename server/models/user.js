@@ -63,6 +63,17 @@ UserSchema.methods.generateAuthToken = function (){//This instance method do hav
 
 };
 
+UserSchema.methods.removeToken = function (token){    
+    let user=this;
+
+    return user.update({
+        //remove item from array which match the criteria
+        $pull: {
+            tokens: {token}
+        }
+    });
+};
+
 //statics is for creating static method/ model method
 UserSchema.statics.findByToken = function(token){
     //Model method, so creating variable with Model name => User
