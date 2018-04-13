@@ -15,6 +15,10 @@ let Todo = mongoose.model('Todo', {//mongoose will auto change the collection na
     completedAt: {
         type: Number,
         default: null
+    },
+    _creator:{
+        required: true,
+        type: mongoose.Schema.Types.ObjectId //to set up the type for mongoose ObjectId
     }
 });
 

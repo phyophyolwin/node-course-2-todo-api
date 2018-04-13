@@ -16,18 +16,24 @@ const users = [{
 }, {
     _id: userTwoId,
     email: 'phyophyo@example.com',
-    password: 'userTwoPass'
+    password: 'userTwoPass',
+    tokens: [{
+        access: 'auth',
+        token: jwt.sign({_id:userTwoId, access: 'auth'}, 'abc123').toString()//object and secret value
+    }]
 }];
 
 const todos = [{
     text: 'First test todo',
-    _id: new ObjectID()
+    _id: new ObjectID(),
+    _creator: userOneId
 },
 {
     text: 'Second test todo',
     _id: new ObjectID(),
     completed: true,
-    completedAt: 333
+    completedAt: 333,
+    _creator: userTwoId
 }];
 
 const populateTodos = (done) =>{//testing lifecycle method
