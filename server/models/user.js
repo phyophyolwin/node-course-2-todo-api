@@ -49,7 +49,7 @@ UserSchema.methods.generateAuthToken = function (){//This instance method do hav
     //Instance method, so cerating variable for instance => user
     let user = this;
     let access = 'auth';
-    let token = jwt.sign({_id:user._id.toHexString(), access}, 'abc123').toString();//object and secret value
+    let token = jwt.sign({_id:user._id.toHexString(), access}, process.env.JWT_SECRET).toString();//object and secret value
 
     // using push to add the new data into array will not work, so set new value by index
     user.tokens.set(user.tokens.length, { access, token});
@@ -81,7 +81,7 @@ UserSchema.statics.findByToken = function(token){
     let decoded;//this is undefined.
 
     try {
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e) {
         // return new Promise((resolve, reject)=>{
         //     reject();
